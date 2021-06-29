@@ -1,0 +1,8 @@
+#Operation File
+#General Format:
+#Ref1ResNumber Ref1AtomName Ref2ResNumber Ref2AtomName OpsResNumber OpsResName Distance Ref3ResNumber Ref3AtomName
+#Example:
+#79 NE2 546 SG 79 HE2 1.405 546 SG
+#This will compute the vector between  Residue79-NE2 and Residue546-SG. Residue79-HE2 will be translated to the point located 1.405A from Residue546-SG along this vector between the two reference points.
+79 NE2 546 SG 79 HE2 1.405 546 SG
+79 NE2 546 SG 79 HE2 1.405 546 SG 
