@@ -9,3 +9,6 @@ Scripts written for the compilation and analysis of data from multiple outputs f
 
 **SAPT-project**
 Scripts written for the automation of input generation and output data compilation from the SAPT projets
+
+**Other**
+Other scripts
