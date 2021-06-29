@@ -1,4 +1,4 @@
-#Example commands:
+## Example commands:
 
 **MDarpeggioMaxModel.py**
     MDarpeggioMaxModel.py -dat exampleA.dat -save exampleA.csv
