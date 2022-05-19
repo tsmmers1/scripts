@@ -1,6 +1,7 @@
 # Scripts
 These are all scripts written by Thomas Summers for data processing and analysis on various projects.
 
+Scripts under **ARCHIVE** were written during 2016-2021. Under **ARCHIVE**:
 **Networks**
 Various scripts for the generation and analysis of networks and their features from select data
 
