@@ -15,6 +15,7 @@ if __name__ == '__main__':
     C2 = open(args.c2, 'r').readlines()
 
     C1atoms = int(C1[2].split()[0])
+    C2atoms = int(C2[2].split()[0])
 
     #Confirm proper origin center
     for i in range(1,4):
@@ -34,10 +35,10 @@ if __name__ == '__main__':
             savefile.write(C1[i])
 
         #Write new volume data
-        for i in range(C1atoms+7,C1atoms+8):
-
-
-
-        
-        
-
+        for i,j in zip(range(C1atoms+6,len(C1)), range(C2atoms+6,len(C2))):
+            s1 = [float(x) for x in C1[i].split()]
+            s2 = [float(x) for x in C2[j].split()]
+            diff = [x - y for x,y in zip(s1,s2)]  #Take differences in two cubes
+            diffstr = [format(x, ".5e").replace("e","E") for x in diff] #Format to certain decimal place
+            diffstr = [f'{x: >12}' for x in diffstr]  #Format strings to occupy certain space
+            savefile.write(" "+" ".join(diffstr)+"\n")
