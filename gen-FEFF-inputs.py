@@ -39,11 +39,17 @@ def write_feff_potentials(s, d, cz, ct):
     sub = d.drop_duplicates(subset=['ipot'], keep='first')
     s.write(sub.to_string(columns=['ipot','aNum','Elem'],header=False,index=False, col_space=5))
     s.write("\n\n")
+    if 'folp' in sub.columns:
+        s.write("FOLP 0  1.15\n")
+        for i in range(len(sub)):
+            #print(sub.loc[sub.index[0], 'ipot'])
+            s.write("FOLP "+str(sub.loc[sub.index[i],'ipot'])+"  "+sub.loc[sub.index[i],'folp']+"\n")
+        s.write("\n")
 
 def write_feff_atoms(s, d, ct):
     s.write("ATOMS\n")
     s.write("* x          y          z      ipot tag distance\n")
-    s.write(f"  0.000000   0.000000   0.000000 0 {ct} 0.00000\n")
+    s.write(f" 0.000000  0.000000  0.000000 0 {ct} 0.00000\n")
     s.write(d.to_string(columns=['f1','f2','f3','ipot','Elem','distance'],header=False,index=False))
     s.write("\n\n")
 
@@ -134,6 +140,13 @@ if __name__ == '__main__':
         data['ipot'] = data.groupby(['Elem'], sort=False).ngroup()
         data['ipot'] += 1 #increment ipot by 1 since center atom will be ipot 0
         data['aNum'] = data['Elem'].map(symb_to_num)
+
+        #Generate folp data if user-specified
+        if args.folp != None:
+            folp_dict = {}
+            for i in range(0,len(args.folp),2):
+                folp_dict[args.folp[i]] = args.folp[i+1]
+            data['folp'] = [folp_dict[x] if x in folp_dict.keys() else '1.15' for x in data['Elem']]
 
         #Generate .xyz file of modified coords
         with open(p+"/"+p.split("/")[-1]+"-mod.xyz", "w") as savefile:
