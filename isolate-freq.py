@@ -22,6 +22,7 @@ if __name__ == '__main__':
                 freqinfo[data[-1].strip()] = [data[0],data[1],data[2],max([abs(float(x)) for x in data[3:12]])]
 
     with open(args.o, 'w') as savefile:
+        savefile.write("Frame,Frequency,Intensity,Force,Max-coord\n")
         for item in freqinfo:
             savefile.write(",".join([item.split("-")[1].split(".")[0]]+[str(x) for x in freqinfo[item]]+["\n"]))
 
