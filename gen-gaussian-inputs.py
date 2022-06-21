@@ -11,9 +11,9 @@ args = parser.parse_args()
 def write_header(s):
     s.write("%nprocshared=32\n")
     s.write("%mem=112GB\n")
-    s.write("#P b3lyp/6-311++G(d,p) freq scrf(cpcm,solvent=carbontetrachloride)\n\n")
-    s.write("TPY-NO2\n\n")
-    s.write("0 1\n")
+    s.write("#P HF/6-31G* scf=tight pop=mk iop(6/50=1) int(grid=finegrid)\n\n")
+    s.write("DTPA\n\n")
+    s.write("-3 1\n")
 
 def write_footer(s):
     s.write("\n")
