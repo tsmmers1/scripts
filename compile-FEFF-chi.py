@@ -28,7 +28,7 @@ if __name__ == '__main__':
                 header = i
                 break
 
-        chi["k"].append(chifile)
+        chi["k_values"].append(chifile)
         if float(data[header+1].split()[0]) != 0:
             chi[0.0].append(None)
         for i in range(header+1,len(data)):
@@ -39,6 +39,7 @@ if __name__ == '__main__':
     df.reset_index(inplace=True)
     df.columns = df.iloc[0]
     df = df[1:]
+    df['k'] = df['k_values']
     df['AverageChi']=df.iloc[:, 1:len(df.columns)].mean(axis=1)
     df['MinChi']=df.iloc[:, 1:len(df.columns)-1].min(axis=1)
     df['MaxChi']=df.iloc[:, 1:len(df.columns)-2].max(axis=1)
