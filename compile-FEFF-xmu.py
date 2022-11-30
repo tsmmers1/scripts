@@ -37,6 +37,7 @@ if __name__ == '__main__':
     kOrder.sort()
     
     with open(args.o, 'w') as savefile:
+        savefile.write("#  -----------------------------------------------------------------------\n")
         savefile.write("#  omega    e    k    mu    mu0     chi     @#\n")
 
         for k in kOrder:
