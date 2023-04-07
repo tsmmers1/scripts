@@ -5,7 +5,7 @@ import calculate_rmsd
 
 parser = argparse.ArgumentParser(description="Constructs RMSD matrices for conformers of given sizes")
 parser.add_argument("f", help="Inputfile list of .xyz files to construct RMSD matrices of")
-parser.add_argument("-t", default=1.5, help="Threshold RMSD below which structures will be classified as near-identical")
+parser.add_argument("-t", default=1.0, type=float, help="Threshold RMSD below which structures will be classified as near-identical, default: 1.0")
 parser.add_argument("-o", default="rmsd_matrices.xlsx", help="Name used for output .xlsx file, default: rmsd_matrices.xlsx")
 args = parser.parse_args()
 
@@ -50,12 +50,23 @@ if __name__ == '__main__':
 
     #Identify NAtoms in XYZ files and group common sizes
     grouped_names = group_common_NAtoms(names)
+    grouped_names_sort = list(grouped_names.keys())
+    grouped_names_sort.sort()
 
     #Initialize results excel file
     workbook = xlsxwriter.Workbook(args.o)
 
+    #Save Distribution data
+    worksheet = workbook.add_worksheet("Distribution")
+    worksheet.write_row(0,0,['NAtoms','Count','Freq'])
+    for pos, group in enumerate(grouped_names_sort):
+        if len(grouped_names[group]) == 1:
+            worksheet.write_row(pos+1,0,[str(group), str(len(grouped_names[group])), str(len(grouped_names[group])/len(names)), grouped_names[group][0]])
+        else:
+            worksheet.write_row(pos+1,0,[str(group), str(len(grouped_names[group])), str(len(grouped_names[group])/len(names))])
+
     #For each grouping with more than one structure, construct RMSD matrix
-    for group in grouped_names:
+    for group in grouped_names_sort:
 
         if len(grouped_names[group]) <= 1: continue
 
@@ -63,7 +74,8 @@ if __name__ == '__main__':
         unique, similar = identify_uniques_and_similars(grouped_names[group], args.t)
 
         #Construct RMSD matrix of all unique structures
-        rmsd_mat = generate_rmsd_matrix(unique)
+        if len(unique) > 1:
+            rmsd_mat = generate_rmsd_matrix(unique)
         
         #Save similarity data to sheet
         worksheet = workbook.add_worksheet("NAtoms"+str(group))
@@ -74,11 +86,12 @@ if __name__ == '__main__':
             worksheet.write_row(pos+1, 2, data)
 
         #Save RMSD matrix data to sheet
-        worksheet = workbook.add_worksheet("RMSD"+str(group))
-        worksheet.write_row(0,1,unique)
-        worksheet.write_column(1,0,unique)
-        for pos, data in enumerate(rmsd_mat):
-            worksheet.write_row(pos+1, 1, data)
+        if len(unique) > 1:
+            worksheet = workbook.add_worksheet("RMSD"+str(group))
+            worksheet.write_row(0,1,unique)
+            worksheet.write_column(1,0,unique)
+            for pos, data in enumerate(rmsd_mat):
+                worksheet.write_row(pos+1, 1, data)
     
     workbook.close()
 
