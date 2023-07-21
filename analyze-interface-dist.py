@@ -5,11 +5,12 @@ from collections import defaultdict
 parser = argparse.ArgumentParser(description="Analyzes a .gro MD file, primarily of a pull simulation. Measures proportions of molecules around a given molecule \
         in the Z direction to identify the location of a user-specified atom/molecule with respect to a given interface ")
 parser.add_argument("f", help="Inputfile MD .gro file")
-parser.add_argument("index", nargs='+', help="Reference atom index for Z value measurement (from .gro file). If more than one value is provided (e.g. 3 4 5 7-10), the geometric center of the atoms will be computed \
-        for the atoms and used as the point of Z reference")
+parser.add_argument("index", nargs='+', help="Reference atom index/indices for distance measurement (from .gro file).")
 parser.add_argument("-solvent", nargs='+', default=['WAT','HEX','OCT'], help="3-character resname of solvent molecules to count, default is WAT HEX OCT") 
-parser.add_argument("-width", default=0.01, type=float, help="Width (in nm) to permit counting molecules within reference Z direction. Default is 0.01 (i.e. +/- 0.01 nm in +/- Z direction from ref index Z position)") 
-parser.add_argument("-o", default="solv_count.xlsx", help="Name used for output .xlsx file, default: solv_count.xlsx")
+parser.add_argument("-dist", default=0.3, type=float, help="Distance (in nm) within to count all solvent atoms, default is 0.3")
+parser.add_argument("-maxdist", default=3.0, type=float, help="Distance (in nm) that if an any solvent-index is greater than, then the solvent atom distances \
+        are skipped to accelerate computation time, default is 3.0")
+parser.add_argument("-o", default="solv_count_dist.xlsx", help="Name used for output .xlsx file, default: solv_count_dist.xlsx")
 args = parser.parse_args()
 
 
@@ -37,22 +38,33 @@ if __name__ == '__main__':
             
             elif i == newline-2: #At end of .gro: process results
                 
-                refZ = sum(ref)/len(ref) 
-
                 for s in args.solvent: 
                     solv_count[s].append(0)
 
                 for m in mol:
-                    if any([abs(x-refZ) < args.width for x in mol[m]]):
-                        solv_count[m[-3:]][-1] +=1
-
+                    b = False
+                    for mi in mol[m]:
+                        if b == True: continue
+                        for r in ref:
+                            d = ( (r[0]-mi[0])**2 + (r[1]-mi[1])**2 + (r[2]-mi[2])**2 )**0.5
+                            if d <= args.dist:
+                                solv_count[m[-3:]][-1] +=1
+                                b = True
+                                break
+                            elif d >= args.maxdist:
+                                b = True
+                                break
+                        
+                    #if any([abs(x-refZ) < args.width for x in mol[m]]):
+                        
+                    #    solv_count[m[-3:]][-1] +=1
                 mol, ref = defaultdict(list), list()
             
             else: #In middle of .gro
                 if int(line[15:20]) in index:
-                    ref.append(float(line[36:44]))
+                    ref.append([float(line[20:28]), float(line[28:36]), float(line[36:44])])
                 elif line[5:8] in args.solvent:
-                    mol[line[0:8].strip()].append(float(line[36:44]))
+                    mol[line[0:8].strip()].append([float(line[20:28]), float(line[28:36]), float(line[36:44])])
 
     #Save data to worksheet
     workbook = xlsxwriter.Workbook(args.o)
