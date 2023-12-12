@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser(description="Generate a series of directories c
 parser.add_argument("-f", help="Inputfile .xyz file of MD sim")
 parser.add_argument("-box", type=float, help="Box size of system")
 parser.add_argument("-center", type=int, default=1, help="Index of atom to be used for center, default = 1")
-parser.add_argument("-atoms", nargs="+", default=['O','N'], help="Element symbol(s) to be analyzed, default is N and O")
+parser.add_argument("-atoms", nargs="+", default=['O','N','C'], help="Element symbol(s) to be analyzed, default is N and O and C")
 parser.add_argument("-dist", type=float, default=6.5, help="Distance (angstroms) from central atom within which to include atoms, default=6.5")
 parser.add_argument("-folp", nargs="+", default=None, help="Optional argument to adjust FOLP parameters. Default for elements is 1.15 -- to specify non-default value(s) specify space separated Element Value (Element2 Value2 ...) e.g. N 1.10")
 parser.add_argument("-start", default=0, type=int, help="Optional argument specifying frame to begin at, default=0")
